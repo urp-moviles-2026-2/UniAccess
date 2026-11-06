@@ -2,6 +2,12 @@
 
 Fecha de revisión: 6 de noviembre de 2026.
 
+## Compatibilidad con Expo Go del iPhone
+
+La primera conexión del teléfono mostró Expo Go para SDK 58 y proyecto para SDK 57. Se actualizó el proyecto a **Expo 58.0.23**, **React Native 0.88.1**, **React 19.3.0** y **Expo Router 58.0.30**, junto con los módulos nativos recomendados. Se conserva `web.output: 'single'` para mantener la SPA del proyecto.
+
+Después de actualizar: **20/20 comprobaciones de Expo Doctor aprobadas**, **12/12 pruebas del laboratorio aprobadas** y exportaciones de **iOS, Android y web aprobadas**. La exportación iOS genera bytecode Hermes; no reemplaza la comprobación final en el iPhone. El servidor se reinició con SDK 58 para repetir el escaneo del QR.
+
 ## Comprobaciones realizadas en PC
 
 - **12 pruebas automatizadas aprobadas** mediante `npm test` (Node 24): esquemas, todos los obligatorios de Contacto, formatos, transformaciones, aforo y fechas, disponibilidad, `zodResolver` + `handleSubmit` antes del dispatch, reset de ambos formularios, cruce de bloques, límite de tres reservas, acciones Redux y persistencia con un doble de AsyncStorage.
