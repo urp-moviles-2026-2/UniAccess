@@ -8,6 +8,8 @@ La primera conexión del teléfono mostró Expo Go para SDK 58 y proyecto para S
 
 Después de actualizar: **20/20 comprobaciones de Expo Doctor aprobadas**, **12/12 pruebas del laboratorio aprobadas** y exportaciones de **iOS, Android y web aprobadas**. La exportación iOS genera bytecode Hermes; no reemplaza la comprobación final en el iPhone. El servidor se reinició con SDK 58 para repetir el escaneo del QR.
 
+La conexión exigió iniciar sesión en Expo CLI y Expo Go con la misma cuenta. Se completó el acceso oficial de Expo en el navegador, se verificó la cuenta mediante `expo whoami` y se reinició el servidor con acceso de red para servir el proyecto autenticado. El usuario confirmó que UniAccess abrió en su iPhone. Las pruebas detalladas de formularios, teclado y capturas indicadas abajo siguen pendientes de documentar.
+
 ## Comprobaciones realizadas en PC
 
 - **12 pruebas automatizadas aprobadas** mediante `npm test` (Node 24): esquemas, todos los obligatorios de Contacto, formatos, transformaciones, aforo y fechas, disponibilidad, `zodResolver` + `handleSubmit` antes del dispatch, reset de ambos formularios, cruce de bloques, límite de tres reservas, acciones Redux y persistencia con un doble de AsyncStorage.
@@ -29,4 +31,4 @@ Después de actualizar: **20/20 comprobaciones de Expo Doctor aprobadas**, **12/
 - Confirmar todos los datos y los aportes del equipo; commits reales desde las cuentas de los integrantes.
 - Crear y completar el sub-issue bajo #23 cuando exista acceso al repositorio privado del curso.
 
-El resultado actual cubre la implementación y las verificaciones de PC. No se afirma que se hayan realizado las pruebas pendientes en teléfono ni que la entrega haya sido publicada.
+El resultado actual cubre la implementación, las verificaciones de PC y la apertura de la app en el iPhone confirmada por el usuario. No se afirma que se hayan realizado las pruebas pendientes de formularios en teléfono ni que el sub-issue de entrega haya sido publicado.

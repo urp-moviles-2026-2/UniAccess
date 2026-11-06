@@ -23,7 +23,7 @@ Reparto **propuesto** para la revisión final: Giussephe revisa esquemas y `Form
 - Pantallas: Login, Nueva reserva y Contacto y feedback.
 - Navegación: `docs/navegacion.md`.
 - Estado: `docs/estado.md`.
-- Pruebas: `npm test`, `npm run check:web`, `npm run check:android`.
+- Pruebas: `npm test`, `npm run check:web`, `npm run check:android`, `npm run check:ios`.
 
 ## Capturas del teléfono pendientes
 
@@ -50,6 +50,8 @@ Además comprobar teclado virtual en **ambos formularios**: Siguiente cambia el 
 5. Los parámetros de navegación podían quedar vencidos o cruzarse con una reserva. El esquema reconsulta el store al confirmar, valida aforo, mantenimiento, fecha, bloques disponibles y límite de reservas activas.
 6. Se corrigieron dos fallos previos: el contador de cumplidas de Perfil usaba `finalizadas` en lugar de `historial`; la hidratación descartaba una lista persistida vacía.
 7. `Alert.alert` es vacío en React Native Web. Las confirmaciones usan el Alert nativo en teléfono y un diálogo del navegador en web. El envío de Contacto continúa siendo una simulación de 800 ms; no tiene API ni almacena datos.
+
+8. El iPhone tenía Expo Go para SDK 58 y el proyecto usaba SDK 57. Se actualizaron Expo, React Native y sus dependencias a las versiones compatibles con SDK 58; Expo Doctor aprobó 20 comprobaciones y las 12 pruebas del laboratorio siguieron pasando. Después se inició sesión en Expo CLI con la misma cuenta de Expo Go y se reinició el servidor. El usuario confirmó la apertura de UniAccess en su iPhone; faltan las capturas y la revisión detallada de los formularios en el dispositivo.
 
 ## Reflexión
 
