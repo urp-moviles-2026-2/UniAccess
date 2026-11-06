@@ -73,7 +73,8 @@ const reservasSlice = createSlice({
       reducer(state, action) {
         state.items.unshift(action.payload);
       },
-      prepare({ ambienteId, fecha, horas, personas, observaciones, tarifaPorHora = 0, requiereAprobacion = false }) {
+      prepare({ ambienteId, fecha, horas, personas, observaciones, nombreGrupo = '', celular = '',
+        tipoActividad = '', tarifaPorHora = 0, requiereAprobacion = false }) {
         const horasOrdenadas = [...horas].sort((a, b) => horaAMinutos(a) - horaAMinutos(b));
         return {
           payload: {
@@ -83,6 +84,9 @@ const reservasSlice = createSlice({
             fecha,
             horas: horasOrdenadas,
             personas: personas || 1,
+            nombreGrupo,
+            celular,
+            tipoActividad,
             observaciones: observaciones ? observaciones.trim() : '',
             estado: requiereAprobacion ? 'pendiente' : 'confirmada',
             creadaEn: new Date().toISOString(),

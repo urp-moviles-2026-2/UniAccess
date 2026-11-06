@@ -1,6 +1,8 @@
 // src/app/login.js
 // Inicio de sesión del estudiante URP
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   View,
   Text,
@@ -17,41 +19,47 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, fontSize, fontWeight, radius, spacing, shadows } from '../theme';
 import { useSesion } from '../context/SesionContext';
 import { USUARIO_DEMO } from '../data/usuario';
-import CampoTexto from '../components/CampoTexto';
+import FormField from '../components/FormField';
+import { loginSchema, loginVacio } from '../schemas/loginSchema';
 import BotonPrincipal from '../components/BotonPrincipal';
 import Aviso from '../components/Aviso';
 
 export default function PantallaLogin() {
   const { iniciarSesion } = useSesion();
-  const [codigo, setCodigo] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [error, setError] = useState('');
-  const [enviando, setEnviando] = useState(false);
+  const contrasenaRef = useRef(null);
+  const enviandoRef = useRef(false);
+  const { control, handleSubmit, reset, setError, clearErrors, trigger,
+    formState: { isSubmitting, errors } } = useForm({
+    resolver: zodResolver(loginSchema), defaultValues: loginVacio,
+    mode: 'onBlur', reValidateMode: 'onChange',
+  });
 
-  const manejarIngreso = async () => {
-    setError('');
-    setEnviando(true);
-    const resultado = await iniciarSesion({ codigo, contrasena });
-    setEnviando(false);
-
-    if (!resultado.ok) {
-      setError(resultado.mensaje);
-      return;
+  const manejarIngreso = async (datos) => {
+    if (enviandoRef.current) return;
+    enviandoRef.current = true;
+    clearErrors('root');
+    try {
+      const resultado = await iniciarSesion(datos);
+      if (!resultado.ok) {
+        setError('root.sesion', { message: resultado.mensaje });
+        return;
+      }
+      reset();
+      router.replace('/inicio');
+    } finally {
+      enviandoRef.current = false;
     }
-    router.replace('/inicio');
   };
 
   const usarCredencialesDemo = () => {
-    setCodigo(USUARIO_DEMO.codigo);
-    setContrasena(USUARIO_DEMO.contrasena);
-    setError('');
+    reset({ codigo: USUARIO_DEMO.codigo, contrasena: USUARIO_DEMO.contrasena });
   };
 
   return (
     <SafeAreaView style={styles.area} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.area}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           contentContainerStyle={styles.contenido}
@@ -68,45 +76,51 @@ export default function PantallaLogin() {
             </Text>
           </View>
 
-          {Boolean(error) && <Aviso tono="error" texto={error} style={styles.aviso} />}
+          {errors.root?.sesion && <Aviso tono="error" texto={errors.root.sesion.message} style={styles.aviso} />}
 
-          <CampoTexto
-            etiqueta="Código universitario"
-            valor={codigo}
-            onChangeText={setCodigo}
+          <FormField
+            control={control} trigger={trigger} name="codigo" label="Código universitario"
             placeholder="Ej. 2022101234"
             icono="id-card-outline"
             keyboardType="number-pad"
             autoCapitalize="none"
             maxLength={12}
+            autoCorrect={false}
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={() => contrasenaRef.current?.focus()}
           />
 
-          <CampoTexto
-            etiqueta="Contraseña"
-            valor={contrasena}
-            onChangeText={setContrasena}
+          <FormField
+            ref={contrasenaRef} control={control} trigger={trigger} name="contrasena" label="Contraseña"
             placeholder="Ingresa tu contraseña"
             icono="lock-closed-outline"
             secureTextEntry
             autoCapitalize="none"
-            ayuda="Usa las mismas credenciales del portal URP."
+            autoCorrect={false}
+            maxLength={72}
+            returnKeyType="send"
+            submitBehavior="blurAndSubmit"
+            onSubmitEditing={handleSubmit(manejarIngreso)}
+            ayuda="Acceso de demostración: mínimo 4 caracteres."
           />
 
           <BotonPrincipal
-            texto="Ingresar"
+            texto={isSubmitting ? 'Ingresando...' : 'Ingresar'}
             icono="log-in-outline"
             tamano="lg"
-            cargando={enviando}
-            onPress={manejarIngreso}
+            cargando={isSubmitting}
+            deshabilitado={isSubmitting}
+            onPress={handleSubmit(manejarIngreso)}
             style={styles.boton}
           />
 
-          <Pressable onPress={usarCredencialesDemo} style={styles.enlaceDemo}>
+          <Pressable disabled={isSubmitting} onPress={usarCredencialesDemo} style={styles.enlaceDemo}>
             <Text style={styles.textoEnlaceDemo}>Usar credenciales de prueba</Text>
           </Pressable>
 
           <View style={[styles.tarjetaDemo, shadows.sm]}>
-            <Text style={styles.tituloDemo}>Cuenta de demostración (LAB-02)</Text>
+            <Text style={styles.tituloDemo}>Cuenta de demostración</Text>
             <Text style={styles.textoDemo}>
               Código: {USUARIO_DEMO.codigo}
               {'\n'}

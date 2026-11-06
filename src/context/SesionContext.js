@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { USUARIO_DEMO } from '../data/usuario';
+import { loginSchema } from '../schemas/loginSchema';
 
 const CLAVE_SESION = 'uniaccess:sesion';
 
@@ -34,14 +35,11 @@ export function SesionProvider({ children }) {
   }, []);
 
   const iniciarSesion = async ({ codigo, contrasena }) => {
-    if (!codigo || !contrasena) {
-      return { ok: false, mensaje: 'Ingresa tu código URP y tu contraseña.' };
-    }
-    if (contrasena.length < 4) {
-      return { ok: false, mensaje: 'La contraseña debe tener al menos 4 caracteres.' };
-    }
+    const resultado = loginSchema.safeParse({ codigo, contrasena });
+    if (!resultado.success) return { ok: false, mensaje: resultado.error.issues[0].message };
 
-    const perfil = { ...USUARIO_DEMO, codigo: codigo.trim() };
+    const { contrasena: claveDemo, ...usuarioDemo } = USUARIO_DEMO;
+    const perfil = { ...usuarioDemo, codigo: resultado.data.codigo };
     setUsuario(perfil);
     try {
       await AsyncStorage.setItem(CLAVE_SESION, JSON.stringify(perfil));

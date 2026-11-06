@@ -19,7 +19,7 @@ export default function LayoutRaiz() {
   useEffect(() => {
     // Hidrata el store desde AsyncStorage al iniciar la aplicación
     cargarReservas().then((items) => {
-      if (items && Array.isArray(items) && items.length > 0) {
+      if (Array.isArray(items)) {
         store.dispatch(reemplazarTodas(items));
       }
     });
@@ -43,6 +43,7 @@ export default function LayoutRaiz() {
             <Stack.Screen name="reserva/nueva" />
             <Stack.Screen name="reserva/[id]" />
             <Stack.Screen name="catalogo" />
+            <Stack.Screen name="contacto" />
           </Stack>
         </SesionProvider>
       </SafeAreaProvider>

@@ -1,9 +1,9 @@
 // src/app/ambiente/[id].js
 // Detalle del ambiente: ficha técnica, fecha, horarios disponibles y resumen
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -47,6 +47,7 @@ export default function PantallaAmbiente() {
   const dias = useMemo(() => generarDias(14), []);
   const [fecha, setFecha] = useState(hoyISO());
   const [seleccionados, setSeleccionados] = useState([]);
+  useFocusEffect(useCallback(() => { setSeleccionados([]); }, []));
 
   if (!ambiente) {
     return (

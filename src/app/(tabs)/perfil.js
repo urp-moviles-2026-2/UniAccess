@@ -86,7 +86,7 @@ export default function PantallaPerfil() {
             <Text style={styles.etiquetaTile}>Horas reservadas</Text>
           </View>
           <View style={[styles.tile, shadows.sm]}>
-            <Text style={styles.valorTile}>{estadisticas.finalizadas}</Text>
+            <Text style={styles.valorTile}>{estadisticas.historial}</Text>
             <Text style={styles.etiquetaTile}>Cumplidas</Text>
           </View>
         </View>
@@ -119,10 +119,13 @@ export default function PantallaPerfil() {
       <View style={styles.seccion}>
         <EncabezadoSeccion titulo="Información y ayuda" />
         <View style={[styles.tarjetaOpciones, shadows.sm]}>
+          <OpcionLista icono="chatbubble-ellipses-outline" texto="Contacto y feedback"
+            onPress={() => router.push('/contacto')} />
           <OpcionLista
             icono="qr-code-outline"
             texto="Biblioteca de componentes (LAB-02)"
             onPress={() => router.push('/catalogo')}
+            conBorde
           />
           <OpcionLista
             icono="time-outline"
