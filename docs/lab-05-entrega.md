@@ -1,18 +1,18 @@
 # LAB-05 — UniAccess URP
 
-Documento de preparación de la entrega. **No representa una entrega cerrada:** faltan los datos del equipo, confirmar aportes individuales, las evidencias del teléfono y publicar el sub-issue.
+Documento de preparación de la entrega. **No representa una entrega cerrada:** faltan los usuarios GitHub de Claudio y Jorge, confirmar aportes individuales, las evidencias del teléfono y publicar el sub-issue.
 
 ## Integrantes
 
 | Integrante | Correo | GitHub | Aporte real al LAB-05 |
 |---|---|---|---|
-| Giussephe David Astudillo Navarro | giussephe.an@gmail.com | Dav1d963 | Implementación y revisión asistidas con Codex; confirmar alcance personal |
-| Claudio Quello Yapu | Pendiente | Pendiente | Pendiente de confirmar |
-| Tercer integrante | Pendiente | Pendiente | Pendiente de confirmar |
+| Giussephe Astudillo Navarro | giusephe.an@gmail.com | Dav1d963 | Implementación y revisión asistidas con Codex; confirmar alcance personal |
+| Claudio Fernando Quello Yapu | claudioquello5@gmail.com | Pendiente | Pendiente de confirmar |
+| Jorge Sebastián Suárez Arango | 202112441@urp.edu.pe | Pendiente | Pendiente de confirmar |
 
 El equipo indica que realizó trabajo interno repartiendo laboratorios anteriores. Se debe describir ese trabajo tal como ocurrió y completar la revisión del LAB-05. No se atribuyen commits a personas que no los hicieron.
 
-Reparto **propuesto** para la revisión final: Giussephe revisa esquemas y `FormField`; Claudio revisa nueva reserva, store y persistencia; el tercer integrante revisa Contacto, navegación y evidencias. Cada uno debe ejecutar su revisión, corregir o documentar hallazgos y aportar desde su cuenta a `lab-05`.
+Reparto **propuesto** para la revisión final: Giussephe revisa esquemas y `FormField`; Claudio revisa nueva reserva, store y persistencia; Jorge revisa Contacto, navegación y evidencias. Cada uno debe ejecutar su revisión, corregir o documentar hallazgos y aportar desde su cuenta a `lab-05`.
 
 ## Repositorio
 
