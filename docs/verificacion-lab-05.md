@@ -8,7 +8,7 @@ La primera conexión del teléfono mostró Expo Go para SDK 58 y proyecto para S
 
 Después de actualizar: **20/20 comprobaciones de Expo Doctor aprobadas**, **12/12 pruebas del laboratorio aprobadas** y exportaciones de **iOS, Android y web aprobadas**. La exportación iOS genera bytecode Hermes; no reemplaza la comprobación final en el iPhone. El servidor se reinició con SDK 58 para repetir el escaneo del QR.
 
-La conexión exigió iniciar sesión en Expo CLI y Expo Go con la misma cuenta. Se completó el acceso oficial de Expo en el navegador, se verificó la cuenta mediante `expo whoami` y se reinició el servidor con acceso de red para servir el proyecto autenticado. El usuario confirmó que UniAccess abrió en su iPhone. Las pruebas detalladas de formularios, teclado y capturas indicadas abajo siguen pendientes de documentar.
+La conexión exigió iniciar sesión en Expo CLI y Expo Go con la misma cuenta. Se completó el acceso oficial de Expo en el navegador, se verificó la cuenta mediante `expo whoami` y se reinició el servidor con acceso de red para servir el proyecto autenticado. El usuario confirmó que UniAccess abrió en su iPhone y aportó las evidencias descritas abajo.
 
 ## Comprobaciones realizadas en PC
 
@@ -23,12 +23,20 @@ La conexión exigió iniciar sesión en Expo CLI y Expo Go con la misma cuenta. 
 - La sesión de demostración persistió al recargar. No se observaron errores de consola durante el flujo web comprobado.
 - `git diff --check` no reportó errores de espacios.
 
+## Evidencias recibidas del iPhone
+
+El usuario proporcionó nueve archivos: dos duplicados exactos y siete capturas únicas. Se conservaron los originales sin modificar en [el índice de evidencias](evidencias/README.md).
+
+- Reserva: selección de bloques, error específico para un celular que empieza con 8 y comprobante confirmado con los nuevos datos del grupo.
+- Contacto: errores específicos de correo y celular; datos de prueba con cuatro estrellas y consentimiento; Alert nativo de agradecimiento con los campos restablecidos detrás.
+- Biblioteca de componentes del LAB-02, como evidencia complementaria.
+
 ## Pendiente en dispositivo y entrega
 
 - Teclado virtual Android/iOS: botones Siguiente/Enviar, desplazamiento con teclado abierto y botón de envío alcanzable.
-- Alert nativo, cancelación y cierre de sesión desde el teléfono.
-- Capturas reales del teléfono que exige la rúbrica. Las imágenes de la prueba web son solo revisión de escritorio.
+- Cancelación y cierre de sesión desde el teléfono.
+- Capturas de Nueva reserva enviada vacía y Contacto enviado vacío, con todos sus errores obligatorios. Los cuatro casos restantes de la rúbrica ya tienen evidencia del iPhone.
 - Confirmar todos los datos y los aportes del equipo; commits reales desde las cuentas de los integrantes.
 - Crear y completar el sub-issue bajo #23 cuando exista acceso al repositorio privado del curso.
 
-El resultado actual cubre la implementación, las verificaciones de PC y la apertura de la app en el iPhone confirmada por el usuario. No se afirma que se hayan realizado las pruebas pendientes de formularios en teléfono ni que el sub-issue de entrega haya sido publicado.
+El resultado actual cubre la implementación, las verificaciones de PC y los casos del iPhone descritos con sus capturas. No se afirma que se hayan realizado las pruebas todavía pendientes ni que el sub-issue de entrega haya sido publicado.

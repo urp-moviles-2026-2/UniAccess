@@ -1,6 +1,6 @@
 # LAB-05 — UniAccess URP
 
-Documento de preparación de la entrega. **No representa una entrega cerrada:** faltan los usuarios GitHub de Claudio y Jorge, confirmar aportes individuales, las evidencias del teléfono y publicar el sub-issue.
+Documento de preparación de la entrega. **No representa una entrega cerrada:** faltan los usuarios GitHub de Claudio y Jorge, confirmar aportes individuales, las dos evidencias de envío vacío y publicar el sub-issue.
 
 ## Integrantes
 
@@ -25,9 +25,11 @@ Reparto **propuesto** para la revisión final: Giussephe revisa esquemas y `Form
 - Estado: `docs/estado.md`.
 - Pruebas: `npm test`, `npm run check:web`, `npm run check:android`, `npm run check:ios`.
 
-## Capturas del teléfono pendientes
+## Evidencias del teléfono
 
-Guardar las capturas reales en `docs/evidencias/` y adjuntarlas al sub-issue. Las capturas web de revisión no reemplazan las que pide el profesor desde el teléfono.
+Se recibieron siete capturas únicas del iPhone, organizadas y descritas en [docs/evidencias/README.md](evidencias/README.md). Documentan selección de horarios, reserva con celular inválido, comprobante correcto, Contacto con formatos inválidos, datos de prueba, Alert de agradecimiento con reset y biblioteca de componentes. Se omitieron dos duplicados exactos.
+
+**Faltan dos evidencias de la rúbrica:** Nueva reserva enviada vacía y Contacto enviado vacío, con los mensajes de todos los campos obligatorios. Las imágenes de formatos inválidos no muestran esos dos casos. Las siguientes instrucciones permiten completar esas capturas y las comprobaciones restantes; después deben adjuntarse al sub-issue.
 
 | Evidencia | Pasos |
 |---|---|
@@ -51,7 +53,7 @@ Además comprobar teclado virtual en **ambos formularios**: Siguiente cambia el 
 6. Se corrigieron dos fallos previos: el contador de cumplidas de Perfil usaba `finalizadas` en lugar de `historial`; la hidratación descartaba una lista persistida vacía.
 7. `Alert.alert` es vacío en React Native Web. Las confirmaciones usan el Alert nativo en teléfono y un diálogo del navegador en web. El envío de Contacto continúa siendo una simulación de 800 ms; no tiene API ni almacena datos.
 
-8. El iPhone tenía Expo Go para SDK 58 y el proyecto usaba SDK 57. Se actualizaron Expo, React Native y sus dependencias a las versiones compatibles con SDK 58; Expo Doctor aprobó 20 comprobaciones y las 12 pruebas del laboratorio siguieron pasando. Después se inició sesión en Expo CLI con la misma cuenta de Expo Go y se reinició el servidor. El usuario confirmó la apertura de UniAccess en su iPhone; faltan las capturas y la revisión detallada de los formularios en el dispositivo.
+8. El iPhone tenía Expo Go para SDK 58 y el proyecto usaba SDK 57. Se actualizaron Expo, React Native y sus dependencias a las versiones compatibles con SDK 58; Expo Doctor aprobó 20 comprobaciones y las 12 pruebas del laboratorio siguieron pasando. Después se inició sesión en Expo CLI con la misma cuenta de Expo Go y se reinició el servidor. El usuario confirmó la apertura de UniAccess y aportó las capturas descritas en el índice de evidencias; faltan las dos de envío vacío y la revisión detallada del teclado en el dispositivo.
 
 ## Reflexión
 

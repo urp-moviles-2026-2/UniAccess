@@ -20,6 +20,7 @@ Se actualizó desde SDK 57 para coincidir con Expo Go del iPhone utilizado en la
 - [Inventario de formularios](docs/formularios.md): Nueva reserva, Contacto y login.
 - [Mapa de navegación](docs/navegacion.md).
 - [Mapa de estado](docs/estado.md).
+- [Evidencias del iPhone](docs/evidencias/README.md): capturas recibidas y dos casos de envío vacío pendientes.
 - [Preparación de entrega y reflexión](docs/lab-05-entrega.md): incluye las evidencias y datos del equipo pendientes.
 
 La rama `lab-05` parte de `lab-04`; no se integra a `main` como parte del laboratorio. Contacto realiza un envío simulado y no transmite datos a un servidor.
