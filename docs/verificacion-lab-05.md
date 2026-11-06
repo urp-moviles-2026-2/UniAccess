@@ -1,0 +1,26 @@
+# Verificación del LAB-05
+
+Fecha de revisión: 6 de noviembre de 2026.
+
+## Comprobaciones realizadas en PC
+
+- **12 pruebas automatizadas aprobadas** mediante `npm test` (Node 24): esquemas, todos los obligatorios de Contacto, formatos, transformaciones, aforo y fechas, disponibilidad, `zodResolver` + `handleSubmit` antes del dispatch, reset de ambos formularios, cruce de bloques, límite de tres reservas, acciones Redux y persistencia con un doble de AsyncStorage.
+- **Exportación web aprobada**: Metro genera el bundle sin errores.
+- **Exportación Android aprobada**: Metro y Hermes generan bytecode. Esta comprobación no es una instalación ni ejecución en teléfono.
+- **Prueba manual web** con viewport de 390 × 844: login vacío muestra errores; Enter pasa de código a contraseña; credenciales demo permiten ingresar.
+- Perfil muestra el contador de cumplidas y abre Contacto.
+- Contacto vacío muestra siete errores; correo inválido y celular corto muestran su mensaje; al corregir se limpian. Se verificaron estrellas y consentimiento. El botón muestra Enviando… y se bloquea durante el envío simulado. Después se limpian todos los campos.
+- Nueva reserva vacía muestra errores de grupo, celular y actividad sin crear una reserva; celular de ocho dígitos se rechaza. El salto de foco funciona entre los campos de texto.
+- Una reserva válida se envió desde el último campo con Enter, volvió a Ambiente y marcó el bloque como reservado. El comprobante mostró grupo, celular, actividad, observaciones limpias y código QR. Después de recargar se restauró esa misma reserva.
+- La sesión de demostración persistió al recargar. No se observaron errores de consola durante el flujo web comprobado.
+- `git diff --check` no reportó errores de espacios.
+
+## Pendiente en dispositivo y entrega
+
+- Teclado virtual Android/iOS: botones Siguiente/Enviar, desplazamiento con teclado abierto y botón de envío alcanzable.
+- Alert nativo, cancelación y cierre de sesión desde el teléfono.
+- Capturas reales del teléfono que exige la rúbrica. Las imágenes de la prueba web son solo revisión de escritorio.
+- Confirmar todos los datos y los aportes del equipo; commits reales desde las cuentas de los integrantes.
+- Crear y completar el sub-issue bajo #23 cuando exista acceso al repositorio privado del curso.
+
+El resultado actual cubre la implementación y las verificaciones de PC. No se afirma que se hayan realizado las pruebas pendientes en teléfono ni que la entrega haya sido publicada.
