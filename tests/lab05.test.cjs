@@ -8,6 +8,12 @@ registerHooks({
     if (specifier === '@react-native-async-storage/async-storage') {
       return nextResolve(require('node:url').pathToFileURL(require('node:path').join(__dirname, 'storageMock.cjs')).href, context);
     }
+    if (specifier === 'expo-secure-store') {
+      return nextResolve(require('node:url').pathToFileURL(require('node:path').join(__dirname, 'secureStoreMock.cjs')).href, context);
+    }
+    if (specifier === 'react-native-url-polyfill/auto' || specifier.startsWith('react-native-url-polyfill')) {
+      return nextResolve(require('node:url').pathToFileURL(require('node:path').join(__dirname, 'urlPolyfillMock.cjs')).href, context);
+    }
     if (specifier.startsWith('.') && !/\.[a-z]+$/i.test(specifier)) {
       return nextResolve(`${specifier}.js`, context);
     }

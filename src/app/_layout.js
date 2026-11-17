@@ -1,5 +1,5 @@
 // src/app/_layout.js
-// Layout raíz: Redux Store Provider, Context de Sesión y navegación de pila
+// Layout raíz: Redux Store Provider, Context de Sesión y navegación de pila (LAB-06)
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Stack } from 'expo-router';
@@ -38,12 +38,14 @@ export default function LayoutRaiz() {
           >
             <Stack.Screen name="index" />
             <Stack.Screen name="login" options={{ animation: 'fade' }} />
+            <Stack.Screen name="registro" options={{ animation: 'fade' }} />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="ambiente/[id]" />
             <Stack.Screen name="reserva/nueva" />
             <Stack.Screen name="reserva/[id]" />
             <Stack.Screen name="catalogo" />
             <Stack.Screen name="contacto" />
+            <Stack.Screen name="reportes" />
           </Stack>
         </SesionProvider>
       </SafeAreaProvider>

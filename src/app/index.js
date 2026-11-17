@@ -1,6 +1,6 @@
 // src/app/index.js
-// Pantalla de arranque: muestra la marca mientras se restaura la sesión y
-// luego deriva al login o a la aplicación según haya sesión activa.
+// Pantalla de arranque: muestra el splash mientras el SDK restaura la sesión persistente (LAB-06)
+// y luego deriva a la aplicación o al login según el estado de la sesión.
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { Redirect } from 'expo-router';
@@ -10,9 +10,11 @@ import { colors, fontSize, fontWeight, radius, spacing } from '../theme';
 import { useSesion } from '../context/SesionContext';
 
 export default function PantallaInicial() {
-  const { usuario, cargando } = useSesion();
+  const { estado, cargando } = useSesion();
 
-  if (cargando) {
+  // Mientras el estado sea "cargando", se muestra la pantalla de splash
+  // evitando el parpadeo de entrar a login por medio segundo
+  if (cargando || estado === 'cargando') {
     return (
       <View style={styles.contenedor}>
         <View style={styles.logo}>
@@ -21,12 +23,13 @@ export default function PantallaInicial() {
         <Text style={styles.marca}>UniAccess</Text>
         <Text style={styles.subtitulo}>Reserva de ambientes CESPAR</Text>
         <Text style={styles.universidad}>Universidad Ricardo Palma</Text>
-        <ActivityIndicator color={colors.primary} style={styles.indicador} />
+        <ActivityIndicator size="large" color={colors.primary} style={styles.indicador} />
       </View>
     );
   }
 
-  return <Redirect href={usuario ? '/inicio' : '/login'} />;
+  // Redirección reactiva según haya sesión activa
+  return <Redirect href={estado === 'conSesion' ? '/inicio' : '/login'} />;
 }
 
 const styles = StyleSheet.create({

@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { colors, fontSize, fontWeight, radius, spacing, shadows } from '../../theme';
 import { useSesion } from '../../context/SesionContext';
+import { useCerrarSesion } from '../../hooks/useCerrarSesion';
 import { selectEstadisticas } from '../../store/reservasSlice';
 import { HORARIO_ATENCION_CESPAR, REGLAMENTO_CESPAR } from '../../data/usuario';
 import ContenedorPantalla from '../../components/ContenedorPantalla';
@@ -17,7 +18,8 @@ import BotonPrincipal from '../../components/BotonPrincipal';
 import InsigniaEstado from '../../components/InsigniaEstado';
 
 export default function PantallaPerfil() {
-  const { usuario, cerrarSesion } = useSesion();
+  const { usuario } = useSesion();
+  const cerrarSesion = useCerrarSesion();
   const estadisticas = useSelector(selectEstadisticas);
 
   const [notificaciones, setNotificaciones] = useState(true);
@@ -119,8 +121,17 @@ export default function PantallaPerfil() {
       <View style={styles.seccion}>
         <EncabezadoSeccion titulo="Información y ayuda" />
         <View style={[styles.tarjetaOpciones, shadows.sm]}>
-          <OpcionLista icono="chatbubble-ellipses-outline" texto="Contacto y feedback"
-            onPress={() => router.push('/contacto')} />
+          <OpcionLista
+            icono="document-text-outline"
+            texto="Mis reportes e incidencias (RLS)"
+            onPress={() => router.push('/reportes')}
+          />
+          <OpcionLista
+            icono="chatbubble-ellipses-outline"
+            texto="Contacto y feedback"
+            onPress={() => router.push('/contacto')}
+            conBorde
+          />
           <OpcionLista
             icono="qr-code-outline"
             texto="Biblioteca de componentes (LAB-02)"
