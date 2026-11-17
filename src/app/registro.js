@@ -138,7 +138,7 @@ export default function PantallaRegistro() {
             trigger={trigger}
             name="confirmarClave"
             label="Confirmar contraseña"
-            placeholder="Repite tu contraseña"
+            placeholder="Repetir contraseña"
             icono="shield-checkmark-outline"
             secureTextEntry
             autoCapitalize="none"
@@ -173,7 +173,7 @@ export default function PantallaRegistro() {
           <View style={[styles.tarjetaSeguridad, shadows.sm]}>
             <Ionicons name="information-circle-outline" size={18} color={colors.primary} />
             <Text style={styles.textoSeguridad}>
-              Tus credenciales son cifradas por Supabase Auth. La aplicación nunca almacena tu contraseña en texto plano.
+              Autenticación gestionada con Supabase Auth. Las contraseñas se almacenan mediante cifrado seguro.
             </Text>
           </View>
         </ScrollView>

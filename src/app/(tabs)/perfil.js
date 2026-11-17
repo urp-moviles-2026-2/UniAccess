@@ -40,7 +40,7 @@ export default function PantallaPerfil() {
   };
 
   const confirmarCierre = () => {
-    Alert.alert('Cerrar sesión', '¿Deseas salir de tu cuenta de UniAccess URP?', [
+    Alert.alert('Cerrar sesión', '¿Deseas cerrar la sesión en UniAccess URP?', [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Salir',

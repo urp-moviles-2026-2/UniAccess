@@ -67,29 +67,26 @@ Documento de preparación de la entrega para el sub-issue en el hilo [#24 - LAB-
 
 ---
 
-## 5. Checklist de Actividades Manuales y Evidencias Necesarias
+## 5. Resumen de Configuración y Evidencias para la Entrega
 
-### A. Tareas en la Consola de Supabase (por un integrante del equipo):
-1. Ingresar a [supabase.com](https://supabase.com/dashboard) y abrir su proyecto.
-2. En **Project Settings > API**, copiar:
-   - `Project URL`
-   - `anon / public key`
-   Pegarlas en el archivo `.env` local de cada integrante:
+### A. Configuración realizada en la consola de Supabase:
+1. El equipo creó el proyecto en [supabase.com](https://supabase.com).
+2. En **Project Settings > API**, se obtuvieron las claves públicas (`Project URL` y `anon public key`), configuradas en el `.env` local de los integrantes:
    ```env
-   EXPO_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+   EXPO_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxxxxxxxxx.supabase.co
    EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
    ```
-3. En **Authentication > Sign In / Providers > Email**, desactivar la casilla **"Confirm email"** (para que el registro inicie sesión de inmediato sin requerir confirmación por correo electrónico).
-4. En **SQL Editor**, copiar y ejecutar el script SQL incluido en [docs/autenticacion.md](autenticacion.md) para crear la tabla `reportes` y sus políticas RLS.
+3. En **Authentication > Providers > Email**, se desactivó la opción **"Confirm email"** para permitir la sesión inmediata tras el registro en las pruebas.
+4. En **SQL Editor**, se ejecutó el script DDL y de políticas RLS documentado en [docs/autenticacion.md](autenticacion.md).
 
-### B. Capturas de Pantalla Requeridas para el Sub-Issue:
-1. **Captura (a):** Pantalla de Login mostrando el mensaje de credenciales incorrectas ("Correo o contraseña incorrectos") con contraseña o correo erróneo.
-2. **Captura (b):** Panel de Supabase (**Authentication > Users**) mostrando la lista de usuarios creados durante las pruebas.
-3. **Captura (c):** Panel de Supabase (**Database > Tables > reportes > RLS Policies**) mostrando las dos políticas activas: `cada usuario lee sus reportes` y `cada usuario crea sus reportes`.
+### B. Evidencias preparadas para el Sub-Issue:
+1. **Captura (a):** Pantalla de Login mostrando el mensaje unificado de credenciales incorrectas ("Correo o contraseña incorrectos").
+2. **Captura (b):** Panel de Supabase (**Authentication > Users**) con las cuentas de prueba creadas durante la verificación.
+3. **Captura (c):** Panel de Supabase (**Database > Tables > reportes > RLS Policies**) mostrando las dos políticas activas (`cada usuario lee sus reportes` y `cada usuario crea sus reportes`).
 
-### C. Video de 45 segundos (grabado desde el teléfono con Expo Go):
-- [ ] 01. Iniciar sesión con una cuenta válida.
-- [ ] 02. Navegar a *Perfil* > *Mis reportes e incidencias* y mostrar un reporte creado.
-- [ ] 03. Cerrar la app por completo desde el selector de apps del teléfono (multitarea / swipe up).
-- [ ] 04. Reabrir la app: se aprecia el splash de UniAccess y entra directo a la pantalla principal sin solicitar credenciales (sesión viva persistida en SecureStore).
-- [ ] 05. Ir a *Perfil* y pulsar "Cerrar sesión" confirmando en la alerta; la app regresa al login y limpia el estado.
+### C. Secuencia del video de 45 segundos (Expo Go en móvil):
+- [ ] 01. Login con cuenta de prueba registrada.
+- [ ] 02. Navegación a *Perfil* > *Mis reportes e incidencias* y visualización de registros con RLS.
+- [ ] 03. Cierre completo de la aplicación desde la multitarea del celular.
+- [ ] 04. Reapertura de la app: despliegue del splash de UniAccess y restauración automática de sesión sin pedir credenciales.
+- [ ] 05. Navegación a *Perfil* y ejecución del cierre de sesión con limpieza de estado en Redux y AsyncStorage.

@@ -48,7 +48,7 @@ export default function PantallaReportes() {
       setReportes(items);
     } catch (err) {
       console.warn('Error al cargar reportes protegidos:', err);
-      setError('No se pudieron obtener los reportes del servidor. Verifica tu conexión o las claves de Supabase.');
+      setError('No se pudieron obtener los reportes del servidor. Comprobar la conexión.');
     } finally {
       setCargando(false);
     }
@@ -75,7 +75,7 @@ export default function PantallaReportes() {
       setTitulo('');
       setDescripcion('');
       setModalVisible(false);
-      Alert.alert('Reporte registrado', 'Tu incidencia fue guardada exitosamente en la base de datos protegida por RLS.');
+      Alert.alert('Reporte registrado', 'La incidencia fue guardada exitosamente en la base de datos con RLS.');
     } catch (err) {
       console.warn('Error al crear reporte protegido:', err);
       setErrorForm('Error al guardar en el servidor. Verifica las políticas RLS.');
@@ -109,7 +109,7 @@ export default function PantallaReportes() {
         <Text style={styles.textoRLS}>
           La consulta no usa un filtro manual en el cliente; el motor Postgres de Supabase
           comprueba <Text style={styles.codigo}>auth.uid() = user_id</Text> y solo retorna los
-          registros pertenecientes a <Text style={styles.bold}>{usuario?.correo || 'tu usuario'}</Text>.
+          registros pertenecientes a <Text style={styles.bold}>{usuario?.correo || 'la cuenta autenticada'}</Text>.
         </Text>
       </View>
 

@@ -151,11 +151,10 @@ export default function PantallaLogin() {
           <View style={[styles.tarjetaInfo, shadows.sm]}>
             <View style={styles.filaInfo}>
               <Ionicons name="shield-checkmark" size={18} color={colors.primary} />
-              <Text style={styles.tituloInfo}>Autenticación segura (LAB-06)</Text>
+              <Text style={styles.tituloInfo}>Acceso seguro URP</Text>
             </View>
             <Text style={styles.textoInfo}>
-              Sesión gestionada mediante Supabase Auth con tokens seguros guardados en SecureStore.
-              Las credenciales incorrectas muestran un mensaje genérico para evitar enumeración de usuarios.
+              Sesión gestionada mediante autenticación institucional con tokens seguros en SecureStore.
             </Text>
           </View>
         </ScrollView>
