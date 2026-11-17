@@ -9,7 +9,7 @@ Documento de preparación de la entrega para el sub-issue en el hilo [#24 - LAB-
 
 | Integrante | Correo | Usuario GitHub | Aporte real al LAB-06 |
 |---|---|---|---|
-| **Claudio Fernando Quello Yapu** | claudioquello5@gmail.com | claudioqy5 | Configuración de Supabase, `src/lib/supabase.js`, `src/services/auth.js` y adaptación de `useCerrarSesion`. |
+| **Claudio Fernando Quello Yapu** | claudioquello5@gmail.com | ClaudioURP | Configuración de Supabase, `src/lib/supabase.js`, `src/services/auth.js` y adaptación de `useCerrarSesion`. |
 | **Giussephe Astudillo Navarro** | giusephe.an@gmail.com | Dav1d963 | Implementación de pantallas `LoginScreen`, `RegistroScreen` y esquemas de validación Zod (`authSchema.js`). |
 | **Jorge Sebastián Suárez Arango** | 202112441@urp.edu.pe | sebastia16 | Integración de `SesionContext` con los 3 estados, navegación reactiva con splash y pantalla de recurso protegido (`src/app/reportes.js` con RLS). |
 
