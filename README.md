@@ -25,6 +25,14 @@ Se actualizó desde SDK 57 para coincidir con Expo Go del iPhone utilizado en la
 
 La rama `lab-05` parte de `lab-04`; no se integra a `main` como parte del laboratorio. Contacto realiza un envío simulado y no transmite datos a un servidor.
 
+## LAB-06
+
+- [Documentación de Autenticación](docs/autenticacion.md): Servicio elegido (Supabase Auth), justificación, flujos y políticas RLS.
+- [Resumen de Modificaciones](MODIFICACIONES.md): Detalle técnico de todos los cambios de arquitectura y componentes.
+- [Preparación de Entrega y Reflexión](docs/lab-06-entrega.md): Integrantes, respuestas a las 4 preguntas de reflexión y guía de evidencias.
+
+La rama `lab-06` parte de `lab-05`; incorpora autenticación real con Supabase Auth, sesión persistente con almacenamiento seguro (`expo-secure-store`), formularios con React Hook Form + Zod, logout con limpieza de Redux/AsyncStorage y protección del recurso `reportes` mediante Row Level Security (RLS) en PostgreSQL.
+
 ## Verificar
 
 Las pruebas usan el runner integrado de **Node 24 o posterior**, sin instalar otro framework:
