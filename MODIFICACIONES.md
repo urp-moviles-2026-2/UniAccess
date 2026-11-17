@@ -1,78 +1,48 @@
-# Modificaciones Realizadas — LAB-06 (Autenticación y RLS)
-**Proyecto:** UniAccess URP — Sistema de Reserva de Áreas Deportivas CESPAR  
-**Rama:** `lab-06` (creada a partir de `lab-05`)
+# Modificaciones del LAB-06
 
----
+Proyecto: UniAccess URP
+Rama: lab-06
 
-## 📌 Resumen General de Cambios
+En este laboratorio implementamos la autenticación real en el proyecto usando Supabase Auth y Postgres, reemplazando el login de prueba que teníamos en los laboratorios anteriores. También dejamos la sesión persistente con SecureStore y configuramos un recurso protegido con Row Level Security (RLS).
 
-En este laboratorio se reemplazó el sistema de login simulado de versiones anteriores por un **sistema de autenticación robusto y persistente** conectado a **Supabase Auth** y una base de datos relacional **PostgreSQL**, incorporando seguridad por **Row Level Security (RLS)** y almacenamiento cifrado de tokens en dispositivos móviles.
+## Cambios realizados en el código
 
----
+1. Configuración de Supabase y variables de entorno
+- Instalamos las dependencias oficiales: @supabase/supabase-js, expo-secure-store y react-native-url-polyfill.
+- Configuramos el archivo .env con las variables públicas EXPO_PUBLIC_SUPABASE_URL y EXPO_PUBLIC_SUPABASE_ANON_KEY.
+- Agregamos .env al archivo .gitignore para que no se suban credenciales al repositorio y creamos .env.example como plantilla.
+- En src/lib/supabase.js inicializamos el cliente con un adaptador que guarda los tokens en SecureStore en teléfonos móviles (y con soporte para navegadores web).
 
-## 1. Configuración del Servicio y Seguridad
-- **SDK Oficial:** Se instalaron `@supabase/supabase-js`, `expo-secure-store` y `react-native-url-polyfill`.
-- **Protección de Secretos:** 
-  - Se configuró `.gitignore` para excluir estrictamente `.env`.
-  - Se creó `.env.example` con los nombres de variables públicas requeridas (`EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`).
-  - No se expone ninguna clave secreta de administración (`service_role`).
-- **Almacenamiento Adaptativo (`src/lib/supabase.js`):**
-  - En móviles (iOS/Android) almacena la sesión en hardware seguro mediante `expo-secure-store` (Keychain/Keystore).
-  - En entorno web de desarrollo conmuta a `AsyncStorage` para compatibilidad en navegadores.
+2. Capa de servicio de autenticación (src/services/auth.js)
+- Es el único archivo de la app que se conecta con el SDK de Supabase.
+- Exporta las funciones principales: registrar, iniciarSesion, cerrarSesion, escucharSesion y mensajeDeAuth.
+- Implementamos la función aUsuario para mapear la respuesta de Supabase a los datos que usa la app (id, correo, nombre, código, escuela, ciclo e iniciales).
+- Se unificó el mensaje de error para credenciales incorrectas en "Correo o contraseña incorrectos" para no revelar si una cuenta existe o no.
 
----
+3. Esquemas de validación Zod (src/schemas/authSchema.js)
+- Creamos loginSchema con validación de correo y contraseña mínima de 8 caracteres.
+- Creamos registroSchema extendiendo el login para validar además el nombre y que ambas contraseñas coincidan.
 
-## 2. Capa de Servicios Aislada
-- **`src/services/auth.js`:**
-  - Único punto de contacto con el SDK de Supabase. Las vistas nunca interactúan directamente con el cliente del proveedor.
-  - Métodos exportados: `registrar`, `iniciarSesion`, `cerrarSesion`, `escucharSesion`, `obtenerToken` y `mensajeDeAuth`.
-  - Mapeo `aUsuario`: normaliza el usuario de Supabase al modelo interno de UniAccess (`id`, `correo`, `nombre`, `codigo`, `escuela`, `ciclo`, `iniciales`).
-  - `mensajeDeAuth`: unifica las credenciales erróneas en el mensaje `"Correo o contraseña incorrectos"` para prevenir la enumeración de cuentas.
+4. Estado de sesión persistente (src/context/SesionContext.js y src/app/index.js)
+- SesionContext ahora maneja tres estados: cargando, sinSesion y conSesion.
+- Al abrir la app se suscribe a escucharSesion. Mientras el SDK recupera la sesión desde SecureStore, la pantalla inicial muestra un indicador de carga (splash) para evitar parpadeos. Si hay sesión activa pasa directo a inicio, y si no, va a login.
 
----
+5. Pantallas de Login y Registro
+- src/app/login.js: conectada a React Hook Form y Zod. El botón se bloquea mientras envía y muestra "Ingresando...". Si falla, muestra el error general arriba. Incluye enlace para registrarse.
+- src/app/registro.js: pantalla nueva con campos de nombre, correo, contraseña y confirmación. Si el registro es exitoso, entra a la app.
 
-## 3. Sesión Persistente y Tres Estados
-- **`src/context/SesionContext.js`:**
-  - Implementa los tres estados oficiales: `"cargando"`, `"sinSesion"` y `"conSesion"`.
-  - Escucha reactivamente los eventos de sesión (`onAuthStateChange`) para mantener una única fuente de verdad.
-- **Splash Screen (`src/app/index.js`):**
-  - Muestra la pantalla de bienvenida y spinner mientras el SDK restaura la sesión persistida en SecureStore, evitando parpadeos al iniciar la app.
-- **Logout Completo (`src/hooks/useCerrarSesion.js`):**
-  - Cierra la sesión en Supabase.
-  - Vacía el store de Redux (`reemplazarTodas([])`).
-  - Limpia la persistencia en `AsyncStorage`.
+6. Cierre de sesión (src/hooks/useCerrarSesion.js)
+- Cierra la sesión en Supabase.
+- Limpia el slice de reservas en Redux (reemplazarTodas([])) y borra la persistencia en AsyncStorage.
+- Se conectó al botón de cerrar sesión en la pantalla de perfil.
 
----
+7. Recurso protegido por regla de servidor (RLS)
+- En docs/supabase_schema.sql dejamos las sentencias para crear la tabla reportes en Postgres y activar Row Level Security (RLS) con las políticas:
+  - cada usuario lee sus reportes: auth.uid() = user_id
+  - cada usuario crea sus reportes: auth.uid() = user_id
+- En src/services/reportes.js creamos las funciones getMisReportes y crearReporte. La consulta no usa un filtro manual de usuario porque Postgres aplica la regla RLS automáticamente según el token.
+- Creamos la pantalla src/app/reportes.js accesible desde Perfil, con sus estados de cargando, error, lista vacía, lista de reportes y modal para crear una nueva incidencia.
 
-## 4. Pantallas y Formularios Validados
-- **`src/schemas/authSchema.js`:**
-  - `loginSchema`: validación estricta de correo institucional y contraseña mínima de 8 caracteres.
-  - `registroSchema`: añade validación de nombre y confirmación exacta de contraseña.
-- **`src/app/login.js`:**
-  - Formulario migrado a React Hook Form + ZodResolver con campos para correo y contraseña.
-  - Botón bloqueado con indicador visual durante el envío (`isSubmitting`).
-  - Enlace directo a la pantalla de registro.
-- **`src/app/registro.js`:**
-  - Nueva pantalla de registro para estudiantes con validación en tiempo real.
-- **`src/app/(tabs)/perfil.js`:**
-  - Muestra datos dinámicos del estudiante autenticado y acceso al recurso protegido.
-
----
-
-## 5. Recurso Protegido en el Servidor (PostgreSQL con RLS)
-- **`docs/supabase_schema.sql`:**
-  - DDL de la tabla `reportes` (incidencias de canchas deportivas) con políticas RLS activadas:
-    - `SELECT`: `using (auth.uid() = user_id)`
-    - `INSERT`: `with check (auth.uid() = user_id)`
-- **`src/services/reportes.js`:**
-  - Consumo directo de la tabla protegida sin necesidad de filtrado manual en el cliente.
-- **`src/app/reportes.js`:**
-  - Pantalla con los 4 estados de UI (cargando, error, vacío y lista) y modal para registrar nuevas incidencias.
-
----
-
-## 6. Documentación y Pruebas Unitarias
-- **`docs/autenticacion.md`:** Decisión técnica, flujos, seguridad de tokens y especificación del recurso protegido.
-- **`docs/lab-06-entrega.md`:** Documento consolidado con respuestas a las 4 preguntas de reflexión y guía de evidencias.
-- **`tests/lab06.test.cjs`:** 5 nuevas pruebas automatizadas que verifican esquemas de autenticación, mapeo de usuario, mensajes de seguridad y limpieza del store en logout.
-- **Total de pruebas:** **17 pruebas pasando** (12 de regresión del LAB-05 + 5 del LAB-06).
+8. Pruebas automatizadas
+- Creamos tests/lab06.test.cjs para probar los esquemas de validación, el mapeo de usuario, los mensajes de error y la limpieza del store.
+- Con npm test pasan las 17 pruebas unitarias sin regresiones.

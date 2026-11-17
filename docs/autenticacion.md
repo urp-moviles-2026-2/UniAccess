@@ -1,36 +1,26 @@
-# Autenticación — UniAccess URP
+# Autenticación - UniAccess URP
 
 ## Servicio elegido
 
-**Supabase Auth.** Nuestra aplicación necesita una base de datos relacional para gestionar reservas e incidencias de las áreas deportivas del CESPAR, y Supabase nos provee Postgres, API REST y autenticación en una plataforma unificada. Las políticas de Row Level Security (RLS) permiten que cada estudiante lea y cree únicamente sus propios registros directamente desde la app móvil sin requerir un backend intermediario. El equipo cuenta con experiencia previa en SQL y diseño relacional en cursos de la carrera.
+Elegimos Supabase Auth. Nuestra aplicación necesita una base de datos relacional para guardar las reservas de canchas y los reportes de incidencias del CESPAR, y Supabase nos da Postgres y autenticación en un mismo servicio. Además, con las políticas de Row Level Security (RLS) podemos hacer que cada alumno vea únicamente sus propios reportes sin necesidad de programar un backend completo desde cero. En el grupo ya teníamos experiencia usando SQL y bases de datos relacionales en otros cursos de la universidad.
 
----
+## Flujos de la app
 
-## Flujos de Autenticación
-
-| Flujo | Pantalla | Qué llama | Resultado |
-|---|---|---|---|
-| **Registro** | `src/app/registro.js` | `registrar({ nombre, correo, clave })` | Crea la cuenta en Supabase Auth, persiste la sesión y pasa el estado a `conSesion`. |
-| **Login** | `src/app/login.js` | `iniciarSesion(correo, clave)` | Autentica contra Supabase; el listener actualiza `SesionContext` a `conSesion` y redirige a la navegación principal. |
-| **Restaurar sesión** | `src/app/index.js` (Splash) | `escucharSesion(callback)` al montar la app | El SDK recupera los tokens de `expo-secure-store`; el estado pasa de `"cargando"` a `"conSesion"` o `"sinSesion"`. |
-| **Logout** | `src/app/(tabs)/perfil.js` | `useCerrarSesion()` | Cierra sesión en Supabase (`signOut`), vacía el slice de reservas en Redux (`reemplazarTodas([])`) y elimina la persistencia en `AsyncStorage`. Vuelve a `/login`. |
-
----
+- Registro (src/app/registro.js): Llama a registrar({ nombre, correo, clave }) en el servicio de autenticación. Crea la cuenta en Supabase y deja la sesión iniciada para que entre directo a la app.
+- Login (src/app/login.js): Llama a iniciarSesion(correo, clave). Valida las credenciales con Supabase; al ser correctas, el listener de la sesión actualiza el estado a conSesion y pasa a la pantalla principal.
+- Restaurar sesión (src/app/index.js): Al abrir la aplicación, la pantalla de inicio llama a escucharSesion. El SDK de Supabase revisa si hay tokens válidos guardados en SecureStore. Mientras revisa muestra un splash de carga y luego decide si manda a inicio o a login.
+- Logout (src/app/(tabs)/perfil.js): Usa el hook useCerrarSesion, que hace signOut en Supabase, vacía el slice de reservas en Redux y borra los datos guardados en AsyncStorage para que no queden datos del alumno anterior.
 
 ## Dónde se guardan los tokens
 
-- Los tokens de sesión (**Access Token** y **Refresh Token**) son almacenados de forma cifrada mediante el SDK de Supabase a través del módulo nativo **`expo-secure-store`** (implementado en `src/lib/supabase.js`).
-- A diferencia de `AsyncStorage`, `SecureStore` aprovecha el **Keystore** (Android) y **Keychain** (iOS), protegiendo los tokens contra accesos no autorizados o extracción de copias de seguridad del sistema de archivos.
-- La aplicación **nunca almacena contraseñas** del usuario.
-- La renovación de tokens por expiración es controlada de forma transparente por el cliente de Supabase (`autoRefreshToken: true`).
+Los tokens de acceso y de renovación (access token y refresh token) se guardan en el celular mediante el módulo expo-secure-store, que está configurado en src/lib/supabase.js.
+SecureStore usa el Keychain en iOS y el Keystore en Android, por lo que quedan protegidos con cifrado del sistema operativo y no en texto plano. La aplicación nunca guarda la contraseña del alumno. La renovación del token cuando expira la hace el mismo SDK en segundo plano.
 
----
+## Recurso protegido
 
-## Recurso protegido por regla del servidor
-
-- **Tabla:** `reportes` en Postgres (Supabase).
-- **Mecanismo de seguridad:** **Row Level Security (RLS)** habilitado a nivel de motor de base de datos.
-- **Políticas aplicadas:**
-  - `SELECT`: `using (auth.uid() = user_id)` — el motor rechaza cualquier fila perteneciente a otro UID, impidiendo el acceso incluso si un usuario malicioso manipula las peticiones en el cliente.
-  - `INSERT`: `with check (auth.uid() = user_id)` — garantiza que las nuevas filas queden estrictamente asociadas al identificador del usuario que envió el token JWT.
-- **Pantalla:** *Mis reportes e incidencias* (`src/app/reportes.js`), accesible desde la sección *Perfil*.
+- Tabla: reportes en la base de datos Postgres de Supabase.
+- Regla de protección: Row Level Security (RLS) activado en la tabla.
+- Políticas creadas:
+  - Para leer (select): auth.uid() = user_id
+  - Para insertar (insert): auth.uid() = user_id
+- Pantalla donde se usa: "Mis reportes e incidencias" (src/app/reportes.js), a la que se entra desde la sección Perfil.
