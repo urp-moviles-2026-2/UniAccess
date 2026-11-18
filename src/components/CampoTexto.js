@@ -1,11 +1,11 @@
 // src/components/CampoTexto.js
 // Componente de Entrada: Campo de texto etiquetado con validación visual
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import React, { forwardRef, useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, fontSize, fontWeight, radius, spacing } from '../theme';
 
-export default function CampoTexto({
+const CampoTexto = forwardRef(function CampoTexto({
   etiqueta,
   valor,
   onChangeText,
@@ -19,8 +19,12 @@ export default function CampoTexto({
   maxLength,
   ayuda,
   style,
-}) {
+  onBlur,
+  onFocus,
+  ...inputProps
+}, ref) {
   const [enfocado, setEnfocado] = useState(false);
+  const [mostrarClave, setMostrarClave] = useState(false);
 
   return (
     <View style={[styles.contenedor, style]}>
@@ -43,28 +47,45 @@ export default function CampoTexto({
           />
         )}
         <TextInput
+          {...inputProps}
+          ref={ref}
+          accessibilityLabel={inputProps.accessibilityLabel || etiqueta}
           value={valor}
           onChangeText={onChangeText}
-          onFocus={() => setEnfocado(true)}
-          onBlur={() => setEnfocado(false)}
+          onFocus={(evento) => { setEnfocado(true); onFocus?.(evento); }}
+          onBlur={(evento) => { setEnfocado(false); onBlur?.(evento); }}
           placeholder={placeholder}
           placeholderTextColor={colors.textMuted}
           multiline={multiline}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={secureTextEntry && !mostrarClave}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           maxLength={maxLength}
           style={[styles.input, multiline && styles.inputMultilinea]}
         />
+        {secureTextEntry && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={mostrarClave ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            onPress={() => setMostrarClave((actual) => !actual)}
+            hitSlop={spacing.sm}
+            style={styles.mostrarClave}
+          >
+            <Ionicons name={mostrarClave ? 'eye-off-outline' : 'eye-outline'} size={22} color={colors.primary} />
+          </Pressable>
+        )}
       </View>
 
-      {Boolean(error) && <Text style={styles.error}>{error}</Text>}
+      {Boolean(error) && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
       {Boolean(ayuda) && !error && <Text style={styles.ayuda}>{ayuda}</Text>}
     </View>
   );
-}
+});
+
+export default CampoTexto;
 
 const styles = StyleSheet.create({
+  mostrarClave: { padding: spacing.sm },
   contenedor: {
     marginBottom: spacing.md,
   },

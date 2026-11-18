@@ -1,6 +1,8 @@
 // src/app/login.js
-// Inicio de sesión del estudiante URP
-import React, { useState } from 'react';
+// Inicio de sesión de UniAccess URP con Supabase Auth (LAB-06)
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   View,
   Text,
@@ -16,42 +18,54 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { colors, fontSize, fontWeight, radius, spacing, shadows } from '../theme';
 import { useSesion } from '../context/SesionContext';
-import { USUARIO_DEMO } from '../data/usuario';
-import CampoTexto from '../components/CampoTexto';
+import { mensajeDeAuth } from '../services/auth';
+import { loginSchema, loginVacio } from '../schemas/authSchema';
+import FormField from '../components/FormField';
 import BotonPrincipal from '../components/BotonPrincipal';
 import Aviso from '../components/Aviso';
 
 export default function PantallaLogin() {
   const { iniciarSesion } = useSesion();
-  const [codigo, setCodigo] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [error, setError] = useState('');
-  const [enviando, setEnviando] = useState(false);
+  const claveRef = useRef(null);
 
-  const manejarIngreso = async () => {
-    setError('');
-    setEnviando(true);
-    const resultado = await iniciarSesion({ codigo, contrasena });
-    setEnviando(false);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    clearErrors,
+    trigger,
+    formState: { isSubmitting, errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: loginVacio,
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  });
 
-    if (!resultado.ok) {
-      setError(resultado.mensaje);
-      return;
+  const manejarIngreso = async ({ correo, clave }) => {
+    clearErrors('root');
+    try {
+      await iniciarSesion(correo, clave);
+      reset();
+      router.replace('/(tabs)/inicio');
+    } catch (error) {
+      setError('root', { message: mensajeDeAuth(error) });
     }
-    router.replace('/inicio');
   };
 
-  const usarCredencialesDemo = () => {
-    setCodigo(USUARIO_DEMO.codigo);
-    setContrasena(USUARIO_DEMO.contrasena);
-    setError('');
+  const rellenarPrueba = () => {
+    reset({
+      correo: 'estudiante@urp.edu.pe',
+      clave: 'urp2026-cespar',
+    });
   };
 
   return (
     <SafeAreaView style={styles.area} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.area}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           contentContainerStyle={styles.contenido}
@@ -64,57 +78,83 @@ export default function PantallaLogin() {
             </View>
             <Text style={styles.titulo}>UniAccess URP</Text>
             <Text style={styles.subtitulo}>
-              Reserva los ambientes deportivos del CESPAR desde tu celular.
+              Inicia sesión con tu cuenta institucional para reservar ambientes del CESPAR.
             </Text>
           </View>
 
-          {Boolean(error) && <Aviso tono="error" texto={error} style={styles.aviso} />}
+          {Boolean(errors.root) && (
+            <Aviso tono="error" texto={errors.root.message} style={styles.aviso} />
+          )}
 
-          <CampoTexto
-            etiqueta="Código universitario"
-            valor={codigo}
-            onChangeText={setCodigo}
-            placeholder="Ej. 2022101234"
-            icono="id-card-outline"
-            keyboardType="number-pad"
+          <FormField
+            control={control}
+            trigger={trigger}
+            name="correo"
+            label="Correo electrónico"
+            placeholder="Ej. estudiante@urp.edu.pe"
+            icono="mail-outline"
+            keyboardType="email-address"
             autoCapitalize="none"
-            maxLength={12}
+            autoCorrect={false}
+            autoComplete="email"
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={() => claveRef.current?.focus()}
           />
 
-          <CampoTexto
-            etiqueta="Contraseña"
-            valor={contrasena}
-            onChangeText={setContrasena}
-            placeholder="Ingresa tu contraseña"
+          <FormField
+            ref={claveRef}
+            control={control}
+            trigger={trigger}
+            name="clave"
+            label="Contraseña"
+            placeholder="Mínimo 8 caracteres"
             icono="lock-closed-outline"
             secureTextEntry
             autoCapitalize="none"
-            ayuda="Usa las mismas credenciales del portal URP."
+            autoCorrect={false}
+            autoComplete="current-password"
+            returnKeyType="send"
+            submitBehavior="blurAndSubmit"
+            onSubmitEditing={handleSubmit(manejarIngreso)}
           />
 
           <BotonPrincipal
-            texto="Ingresar"
+            texto={isSubmitting ? 'Ingresando...' : 'Ingresar'}
             icono="log-in-outline"
             tamano="lg"
-            cargando={enviando}
-            onPress={manejarIngreso}
+            cargando={isSubmitting}
+            deshabilitado={isSubmitting}
+            onPress={handleSubmit(manejarIngreso)}
             style={styles.boton}
           />
 
-          <Pressable onPress={usarCredencialesDemo} style={styles.enlaceDemo}>
-            <Text style={styles.textoEnlaceDemo}>Usar credenciales de prueba</Text>
+          <View style={styles.filaRegistro}>
+            <Text style={styles.textoPregunta}>¿No tienes una cuenta aún?</Text>
+            <Pressable
+              disabled={isSubmitting}
+              onPress={() => router.push('/registro')}
+              style={({ pressed }) => [styles.enlace, pressed && { opacity: 0.6 }]}
+            >
+              <Text style={styles.textoEnlace}>Regístrate aquí</Text>
+            </Pressable>
+          </View>
+
+          <Pressable
+            disabled={isSubmitting}
+            onPress={rellenarPrueba}
+            style={styles.enlaceDemo}
+          >
+            <Text style={styles.textoEnlaceDemo}>Rellenar datos de prueba</Text>
           </Pressable>
 
-          <View style={[styles.tarjetaDemo, shadows.sm]}>
-            <Text style={styles.tituloDemo}>Cuenta de demostración (LAB-02)</Text>
-            <Text style={styles.textoDemo}>
-              Código: {USUARIO_DEMO.codigo}
-              {'\n'}
-              Contraseña: {USUARIO_DEMO.contrasena}
-            </Text>
-            <Text style={styles.notaDemo}>
-              Cualquier código de 4 a 12 dígitos y una contraseña de 4 caracteres o más
-              permiten ingresar mientras la app no esté conectada a la base de datos de la URP.
+          <View style={[styles.tarjetaInfo, shadows.sm]}>
+            <View style={styles.filaInfo}>
+              <Ionicons name="shield-checkmark" size={18} color={colors.primary} />
+              <Text style={styles.tituloInfo}>Acceso seguro URP</Text>
+            </View>
+            <Text style={styles.textoInfo}>
+              Sesión gestionada mediante autenticación institucional con tokens seguros en SecureStore.
             </Text>
           </View>
         </ScrollView>
@@ -130,7 +170,7 @@ const styles = StyleSheet.create({
   },
   contenido: {
     padding: spacing.lg,
-    paddingTop: spacing.xxl,
+    paddingTop: spacing.xl,
     paddingBottom: spacing.xxl,
   },
   cabecera: {
@@ -157,7 +197,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.xs,
     lineHeight: 20,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   aviso: {
     marginBottom: spacing.lg,
@@ -165,39 +205,57 @@ const styles = StyleSheet.create({
   boton: {
     marginTop: spacing.sm,
   },
-  enlaceDemo: {
-    alignSelf: 'center',
-    paddingVertical: spacing.md,
+  filaRegistro: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.lg,
   },
-  textoEnlaceDemo: {
+  textoPregunta: {
     fontSize: fontSize.sm,
-    fontWeight: fontWeight.semibold,
+    color: colors.textSecondary,
+  },
+  enlace: {
+    paddingVertical: spacing.xs,
+  },
+  textoEnlace: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.bold,
     color: colors.primary,
   },
-  tarjetaDemo: {
+  enlaceDemo: {
+    alignSelf: 'center',
+    paddingVertical: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  textoEnlaceDemo: {
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    textDecorationLine: 'underline',
+  },
+  tarjetaInfo: {
     backgroundColor: colors.surface,
     borderRadius: radius.xl,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.lg,
-    marginTop: spacing.sm,
+    padding: spacing.md,
+    marginTop: spacing.md,
   },
-  tituloDemo: {
-    fontSize: fontSize.sm,
+  filaInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: 4,
+  },
+  tituloInfo: {
+    fontSize: fontSize.xs,
     fontWeight: fontWeight.bold,
     color: colors.text,
-    marginBottom: spacing.xs,
   },
-  textoDemo: {
-    fontSize: fontSize.sm,
-    color: colors.text,
-    lineHeight: 20,
-    fontWeight: fontWeight.medium,
-  },
-  notaDemo: {
+  textoInfo: {
     fontSize: fontSize.xs,
-    color: colors.textMuted,
+    color: colors.textSecondary,
     lineHeight: 17,
-    marginTop: spacing.sm,
   },
 });

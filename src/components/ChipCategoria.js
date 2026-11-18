@@ -9,12 +9,17 @@ export default function ChipCategoria({
   activo = false,
   conteo,
   onPress,
+  onBlur,
+  deshabilitado = false,
   style,
 }) {
   return (
     <Pressable
       onPress={onPress}
+      onBlur={onBlur}
+      disabled={deshabilitado}
       accessibilityRole="button"
+      accessibilityState={{ selected: activo, disabled: deshabilitado }}
       style={({ pressed }) => [
         styles.chip,
         activo ? styles.chipActivo : styles.chipInactivo,

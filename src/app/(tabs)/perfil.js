@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { colors, fontSize, fontWeight, radius, spacing, shadows } from '../../theme';
 import { useSesion } from '../../context/SesionContext';
+import { useCerrarSesion } from '../../hooks/useCerrarSesion';
 import { selectEstadisticas } from '../../store/reservasSlice';
 import { HORARIO_ATENCION_CESPAR, REGLAMENTO_CESPAR } from '../../data/usuario';
 import ContenedorPantalla from '../../components/ContenedorPantalla';
@@ -17,7 +18,8 @@ import BotonPrincipal from '../../components/BotonPrincipal';
 import InsigniaEstado from '../../components/InsigniaEstado';
 
 export default function PantallaPerfil() {
-  const { usuario, cerrarSesion } = useSesion();
+  const { usuario } = useSesion();
+  const cerrarSesion = useCerrarSesion();
   const estadisticas = useSelector(selectEstadisticas);
 
   const [notificaciones, setNotificaciones] = useState(true);
@@ -38,7 +40,7 @@ export default function PantallaPerfil() {
   };
 
   const confirmarCierre = () => {
-    Alert.alert('Cerrar sesión', '¿Deseas salir de tu cuenta de UniAccess URP?', [
+    Alert.alert('Cerrar sesión', '¿Deseas cerrar la sesión en UniAccess URP?', [
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Salir',
@@ -86,7 +88,7 @@ export default function PantallaPerfil() {
             <Text style={styles.etiquetaTile}>Horas reservadas</Text>
           </View>
           <View style={[styles.tile, shadows.sm]}>
-            <Text style={styles.valorTile}>{estadisticas.finalizadas}</Text>
+            <Text style={styles.valorTile}>{estadisticas.historial}</Text>
             <Text style={styles.etiquetaTile}>Cumplidas</Text>
           </View>
         </View>
@@ -120,9 +122,21 @@ export default function PantallaPerfil() {
         <EncabezadoSeccion titulo="Información y ayuda" />
         <View style={[styles.tarjetaOpciones, shadows.sm]}>
           <OpcionLista
+            icono="document-text-outline"
+            texto="Mis reportes e incidencias (RLS)"
+            onPress={() => router.push('/reportes')}
+          />
+          <OpcionLista
+            icono="chatbubble-ellipses-outline"
+            texto="Contacto y feedback"
+            onPress={() => router.push('/contacto')}
+            conBorde
+          />
+          <OpcionLista
             icono="qr-code-outline"
             texto="Biblioteca de componentes (LAB-02)"
             onPress={() => router.push('/catalogo')}
+            conBorde
           />
           <OpcionLista
             icono="time-outline"

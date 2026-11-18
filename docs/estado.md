@@ -23,6 +23,9 @@
         "fecha": "2026-11-07",
         "horas": ["18:00", "19:00"],
         "personas": 14,
+        "nombreGrupo": "Selección de Ingeniería",
+        "celular": "987654321",
+        "tipoActividad": "entrenamiento",
         "observaciones": "Entrenamiento de Ingeniería",
         "estado": "confirmada",
         "monto": 80,
@@ -50,3 +53,13 @@
 * `selectReservasActivas`: Filtra las reservas en estado pendiente o confirmada.
 * `selectProximaReserva`: La reserva activa más próxima cronológicamente.
 * `selectEstadisticas`: Conteo global de activas, historial, canceladas y horas totales.
+
+## Cambios del LAB-05
+
+Los campos de Nueva reserva, Login y Contacto viven en React Hook Form (`useForm`), sin `useState` por campo. Las reglas viven en `src/schemas/` y `handleSubmit` entrega los datos transformados antes de crear una reserva o iniciar sesión.
+
+Nueva reserva agrega `nombreGrupo`, `celular` y `tipoActividad` al payload de `agregarReserva`. El prepare conserva estos campos y la persistencia existente serializa el objeto completo con la misma clave `reservas/v1`. El comprobante muestra esos valores si existen; las reservas antiguas y demo siguen funcionando sin migración.
+
+Contacto no agrega un slice: sus siete campos viven solo en el formulario; se simula un envío de 800 ms, se confirma con Alert y se ejecuta `reset()`. Los datos no se guardan ni se escriben en consola; una API se integrará en una semana posterior. Login usa `SesionContext` y AsyncStorage como antes, evitando agregar la contraseña demo a las nuevas sesiones persistidas.
+
+Se admite hidratar `[]` para conservar la lista vacía después de eliminar todas las reservas. Perfil lee `historial` para el contador de reservas cumplidas.

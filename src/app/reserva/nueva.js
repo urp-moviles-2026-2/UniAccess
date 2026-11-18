@@ -1,9 +1,12 @@
 // src/app/reserva/nueva.js
 // Paso final del flujo: revisión de datos, aforo y confirmación de la reserva
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { crearReservaSchema, reservaVacia, TIPOS_ACTIVIDAD } from '../../schemas/reservaSchema';
 
 import { colors, fontSize, fontWeight, radius, spacing, shadows } from '../../theme';
 import { useSesion } from '../../context/SesionContext';
@@ -17,23 +20,39 @@ import EncabezadoSeccion from '../../components/EncabezadoSeccion';
 import ImagenAmbiente from '../../components/ImagenAmbiente';
 import ElementoInfo from '../../components/ElementoInfo';
 import SelectorCantidad from '../../components/SelectorCantidad';
-import CampoTexto from '../../components/CampoTexto';
+import FormScreen from '../../components/FormScreen';
+import FormField from '../../components/FormField';
+import FormControl from '../../components/FormControl';
+import ChipSelectField from '../../components/ChipSelectField';
 import BotonPrincipal from '../../components/BotonPrincipal';
 import Aviso from '../../components/Aviso';
 import EstadoVacio from '../../components/EstadoVacio';
+import { mostrarConfirmacion } from '../../utils/alertas';
 
 export default function PantallaNuevaReserva() {
   const { ambienteId, fecha, horas } = useLocalSearchParams();
   const dispatch = useDispatch();
+  const store = useStore();
   const estadisticas = useSelector(selectEstadisticas);
-  const { usuario } = useSesion();
+  const { usuario, cargando } = useSesion();
 
   const ambiente = obtenerAmbiente(ambienteId);
   const listaHoras = typeof horas === 'string' && horas.length ? ordenarHoras(horas.split(',')) : [];
 
-  const [personas, setPersonas] = useState(ambiente ? Math.min(10, ambiente.capacidad) : 1);
-  const [observaciones, setObservaciones] = useState('');
-  const [enviando, setEnviando] = useState(false);
+  const celularRef = useRef(null);
+  const observacionesRef = useRef(null);
+  const enviandoRef = useRef(false);
+  const { control, handleSubmit, reset, trigger, formState: { isSubmitting, errors } } = useForm({
+    resolver: zodResolver(crearReservaSchema(() => store.getState().reservas.items), undefined, { mode: 'sync' }),
+    defaultValues: { ...reservaVacia, ambienteId: typeof ambienteId === 'string' ? ambienteId : '',
+      fecha: typeof fecha === 'string' ? fecha : '', horas: listaHoras,
+      personas: ambiente ? Math.min(10, ambiente.capacidad) : 1 },
+    mode: 'onBlur', reValidateMode: 'onChange',
+  });
+  const field = { control, trigger };
+
+  if (cargando) return null;
+  if (!usuario) return <Redirect href="/login" />;
 
   if (!ambiente || listaHoras.length === 0) {
     return (
@@ -61,24 +80,27 @@ export default function PantallaNuevaReserva() {
   const limiteAlcanzado = estadisticas.activas >= MAX_RESERVAS_ACTIVAS;
   const esperaAprobacion = requiereAprobacion(ambiente);
 
-  const confirmar = () => {
-    setEnviando(true);
+  const confirmar = async (datos) => {
+    if (enviandoRef.current) return;
+    enviandoRef.current = true;
     const accion = agregarReserva({
-      ambienteId: ambiente.id,
-      fecha,
-      horas: listaHoras,
-      personas,
-      observaciones,
+      ...datos,
       tarifaPorHora: ambiente.tarifaPorHora,
       requiereAprobacion: esperaAprobacion,
     });
     dispatch(accion);
-    setEnviando(false);
-    router.replace(`/reserva/${accion.payload.id}`);
+    reset();
+    router.back();
+    mostrarConfirmacion(esperaAprobacion ? 'Solicitud registrada' : 'Reserva confirmada',
+      `${datos.nombreGrupo}: tu reserva ${accion.payload.codigo} ya aparece en Mis reservas.`, [
+        { text: 'Aceptar' },
+        { text: 'Ver comprobante', onPress: () => router.push(`/reserva/${accion.payload.id}`) },
+      ]);
   };
+  const enviarFormulario = handleSubmit(confirmar);
 
   return (
-    <ContenedorPantalla edges={['top']}>
+    <FormScreen>
       <EncabezadoPantalla
         titulo="Confirmar reserva"
         subtitulo="Revisa los datos antes de solicitar tu bloque"
@@ -101,8 +123,14 @@ export default function PantallaNuevaReserva() {
 
       <View style={styles.seccion}>
         <EncabezadoSeccion titulo="Detalle del bloque" />
+        {errors.ambienteId && <Aviso tono="error" texto={errors.ambienteId.message} />}
+        {errors.fecha && <Aviso tono="error" texto={errors.fecha.message} />}
+        {errors.horas && <Aviso tono="error" texto={errors.horas.message || 'Elige un bloque horario válido'} />}
+        {(errors.ambienteId || errors.fecha || errors.horas) && (
+          <BotonPrincipal texto="Volver a elegir horario" variante="borde" onPress={() => router.back()} />
+        )}
         <View style={[styles.tarjetaResumen, shadows.sm]}>
-          <FilaResumen etiqueta="Fecha" valor={formatearFechaLarga(fecha)} />
+          <FilaResumen etiqueta="Fecha" valor={typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha) ? formatearFechaLarga(fecha) : 'Selecciona una fecha válida'} />
           <FilaResumen etiqueta="Horario" valor={rangoHorario(listaHoras)} />
           <FilaResumen
             etiqueta="Duración"
@@ -130,44 +158,50 @@ export default function PantallaNuevaReserva() {
           style={styles.aviso}
         />
       )}
+      {errors.root?.limite && <Aviso tono="error" texto={errors.root.limite.message} style={styles.aviso} />}
 
       <View style={styles.seccion}>
         <EncabezadoSeccion titulo="Datos del grupo" />
-        <SelectorCantidad
-          etiqueta="Número de jugadores"
-          valor={personas}
-          onChange={setPersonas}
-          minimo={1}
-          maximo={ambiente.capacidad}
-          sufijo="personas"
-        />
+        <FormField {...field} name="nombreGrupo" label="Nombre del grupo" placeholder="Ej. Selección de Ingeniería"
+          autoCapitalize="words" maxLength={60} returnKeyType="next" submitBehavior="submit"
+          onSubmitEditing={() => celularRef.current?.focus()} />
+        <FormField {...field} ref={celularRef} name="celular" label="Celular de contacto" placeholder="987654321"
+          keyboardType="number-pad" autoCapitalize="none" autoCorrect={false} maxLength={9}
+          returnKeyType="next" submitBehavior="submit" onSubmitEditing={() => observacionesRef.current?.focus()} />
+        <ChipSelectField {...field} name="tipoActividad" label="Tipo de actividad" opciones={TIPOS_ACTIVIDAD} />
+        <FormControl {...field} name="personas">
+          {({ value, onChange }) => <SelectorCantidad etiqueta="Número de jugadores" valor={value}
+            onChange={onChange} minimo={1} maximo={ambiente.capacidad} sufijo="personas" />}
+        </FormControl>
 
-        <CampoTexto
-          etiqueta="Observaciones para CESPAR (opcional)"
-          valor={observaciones}
-          onChangeText={setObservaciones}
+        <FormField {...field}
+          ref={observacionesRef} name="observaciones" label="Observaciones para CESPAR (opcional)"
           placeholder="Ej. Campeonato interno de Ingeniería, requerimos arcos adicionales."
           icono="create-outline"
           multiline
           maxLength={180}
+          returnKeyType="send"
+          blurOnSubmit
+          submitBehavior="blurAndSubmit"
+          onSubmitEditing={enviarFormulario}
           ayuda={`Solicitante: ${usuario?.nombre} · ${usuario?.codigo}`}
           style={styles.campoObservaciones}
         />
       </View>
 
       <BotonPrincipal
-        texto={esperaAprobacion ? 'Enviar solicitud' : 'Confirmar reserva'}
+        texto={isSubmitting ? 'Guardando...' : esperaAprobacion ? 'Enviar solicitud' : 'Confirmar reserva'}
         icono="checkmark-circle-outline"
         tamano="lg"
-        cargando={enviando}
-        deshabilitado={limiteAlcanzado}
-        onPress={confirmar}
+        cargando={isSubmitting}
+        deshabilitado={limiteAlcanzado || isSubmitting}
+        onPress={enviarFormulario}
       />
 
       <Text style={styles.avisoCancelacion}>
         Puedes cancelar sin costo hasta 4 horas antes del inicio del bloque.
       </Text>
-    </ContenedorPantalla>
+    </FormScreen>
   );
 }
 

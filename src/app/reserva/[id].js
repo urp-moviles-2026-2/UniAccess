@@ -21,6 +21,7 @@ import BotonPrincipal from '../../components/BotonPrincipal';
 import Aviso from '../../components/Aviso';
 import EstadoVacio from '../../components/EstadoVacio';
 import ElementoInfo from '../../components/ElementoInfo';
+import { TIPOS_ACTIVIDAD } from '../../schemas/reservaSchema';
 
 export default function PantallaComprobante() {
   const { id } = useLocalSearchParams();
@@ -159,6 +160,10 @@ export default function PantallaComprobante() {
       <View style={styles.seccion}>
         <EncabezadoSeccion titulo="Detalle de la reserva" />
         <View style={[styles.tarjetaDetalle, shadows.sm]}>
+          {Boolean(reserva.nombreGrupo) && <ElementoInfo icono="people-outline" etiqueta="Grupo" valor={reserva.nombreGrupo} style={styles.itemDetalle} />}
+          {Boolean(reserva.celular) && <ElementoInfo icono="call-outline" etiqueta="Contacto" valor={reserva.celular} style={styles.itemDetalle} />}
+          {Boolean(reserva.tipoActividad) && <ElementoInfo icono="trophy-outline" etiqueta="Actividad"
+            valor={TIPOS_ACTIVIDAD.find((tipo) => tipo.valor === reserva.tipoActividad)?.etiqueta || reserva.tipoActividad} style={styles.itemDetalle} />}
           <ElementoInfo
             icono={categoria ? categoria.icono : 'football-outline'}
             etiqueta="Ambiente"

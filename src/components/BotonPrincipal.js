@@ -36,7 +36,10 @@ export default function BotonPrincipal({
       ]}
     >
       {cargando ? (
-        <ActivityIndicator size="small" color={colorTexto} />
+        <View style={styles.contenido}>
+          <ActivityIndicator size="small" color={colorTexto} style={styles.icono} />
+          <Text style={[styles.textoBase, styles[`textoTamano_${tamano}`], styles[`textoVariante_${variante}`]]}>{texto}</Text>
+        </View>
       ) : (
         <View style={styles.contenido}>
           {Boolean(icono) && (
